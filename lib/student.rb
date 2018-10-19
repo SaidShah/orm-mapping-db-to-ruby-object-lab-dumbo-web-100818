@@ -85,14 +85,9 @@ class Student
     sql = <<-SQL
       SELECT * FROM students WHERE grade = 10
     SQL
-    DB[:conn].execute(sql).each do |each_row|
-      new_student = Student.new()
-      new_student.id = each_row[0]
-      new_student.name = each_row[1]
-      new_student.grade = each_row[2]
-      students << new_student
-    end
-    students[0...given_amount.to_i]
+    DB[:conn].execute(sql).map do |each_row|
+      self.new_from_db(each_row)
+    end[0...given_amount.to_i]
   end
 
   def self.first_student_in_grade_10
@@ -100,25 +95,15 @@ class Student
     sql = <<-SQL
       SELECT * FROM students WHERE grade = 10
     SQL
-    DB[:conn].execute(sql).each do |each_row|
-      new_student = Student.new()
-      new_student.id = each_row[0]
-      new_student.name = each_row[1]
-      new_student.grade = each_row[2]
-      students << new_student
-    end
-    students.first
+        DB[:conn].execute(sql).map do |row|
+          self.new_from_db(row)
+    end.first
   end
 
   def self.all_students_in_grade_X(grade)
     sql = <<-SQL
       SELECT * FROM students
     SQL
-
     DB[:conn].execute(sql)
-    # binding.pry
   end
-
-
-
 end
