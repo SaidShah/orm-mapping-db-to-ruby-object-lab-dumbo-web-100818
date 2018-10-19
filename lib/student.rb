@@ -70,18 +70,54 @@ class Student
     DB[:conn].execute(sql)
   end
 
-  def students_below_12th_grade
+  def self.students_below_12th_grade
     sql = <<-SQL
       SELECT * FROM students WHERE grade < 12
     SQL
-
-    DB[:conn].execute(sql)
+    array_of_rows = DB[:conn].execute(sql)
+    array_of_rows.map do |row|
+      self.new_from_db(row)
+    end
   end
 
+  def self.first_X_students_in_grade_10(given_amount)
+    students = []
+    sql = <<-SQL
+      SELECT * FROM students WHERE grade = 10
+    SQL
+    DB[:conn].execute(sql).each do |each_row|
+      new_student = Student.new()
+      new_student.id = each_row[0]
+      new_student.name = each_row[1]
+      new_student.grade = each_row[2]
+      students << new_student
+    end
+    students[0...given_amount.to_i]
+  end
 
+  def self.first_student_in_grade_10
+    students = []
+    sql = <<-SQL
+      SELECT * FROM students WHERE grade = 10
+    SQL
+    DB[:conn].execute(sql).each do |each_row|
+      new_student = Student.new()
+      new_student.id = each_row[0]
+      new_student.name = each_row[1]
+      new_student.grade = each_row[2]
+      students << new_student
+    end
+    students.first
+  end
 
+  def self.all_students_in_grade_X(grade)
+    sql = <<-SQL
+      SELECT * FROM students
+    SQL
 
-
+    DB[:conn].execute(sql)
+    # binding.pry
+  end
 
 
 
